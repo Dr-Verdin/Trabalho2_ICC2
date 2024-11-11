@@ -53,6 +53,30 @@ bool carregar_palavras(Jogo *jogo){
 return true;
 }
 
+int busca_binaria(Jogo *jogo, char* answer, int total){
+    if(jogo!=NULL){
+        int inf=0;
+        int sup=total-1;
+        int meio, aux;
+
+        while(inf<=sup){
+            meio=(inf+sup)/2;
+            aux=strcmp(answer, jogo->palavras[meio]);
+
+            if(aux==0){
+                return meio;
+            }else
+            if(aux<0){
+                inf=meio+1;
+            }else{
+                sup=meio-1;
+            }
+        }
+    }
+
+return ERRO;
+}
+
 void validador(Jogo *jogo, char* answer){
     if(strchr(answer, jogo->obrigada)==NULL){
         printf("palavra invalida\n");
@@ -72,7 +96,19 @@ void validador(Jogo *jogo, char* answer){
     }
 }
 
+void apagar_tudo(Jogo *jogo){
+    if(jogo!=NULL){
+        for(int i=0; i<jogo->total; i++){
+            free(jogo->palavras[i]);
+            jogo->palavras[i]=NULL;
+        }
+        free(jogo->palavras);
+        jogo->palavras=NULL;
 
+        free(jogo->discovers);
+        jogo->discovers=NULL;
+    }
+}
 
 int main(void){
     char comando[10];
