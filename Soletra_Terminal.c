@@ -15,6 +15,15 @@ typedef struct{
     char obrigada;
 } Jogo;
 
+bool verifica(char letra, char *palavra, char *letras);
+int busca_binaria(Jogo *jogo, char* answer, int total);
+bool carregar_palavras(Jogo *jogo);
+void validador(Jogo *jogo, char* answer);
+void progresso(Jogo *jogo);
+void solucao(&jogo);
+void apagar_tudo(Jogo *jogo);
+
+
 bool verifica(char letra, char *palavra, char *letras){
     if(strchr(palavra, letra)==NULL){
         return false;
