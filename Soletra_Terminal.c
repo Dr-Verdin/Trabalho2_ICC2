@@ -12,7 +12,7 @@ typedef struct{
     bool *discovers;
     int total;
     int descobertas;
-    char letras[MAX];
+    char letras[MAX+1];
     char obrigada;
     int *tam;
     int *quant;
@@ -123,7 +123,7 @@ void validador(Jogo *jogo, char* answer){
         printf("sucesso + 1\n");
          
         int aux2= strlen(answer)-4;
-        jogo->descobertas++;ss
+        jogo->descobertas++;
         jogo->discovers[aux]=true;
         jogo->quant[aux2]++;
     }
@@ -146,7 +146,7 @@ void solucao(Jogo *jogo) {
                 printf("\n");
             }
         }
-        printf("\nfim!\n");
+        printf("fim!\n");
     }
 }
 
