@@ -27,6 +27,54 @@ void progresso(Jogo *jogo);
 void solucao(Jogo *jogo);
 void apagar_tudo(Jogo *jogo);
 
+void merge(char **vet, int inicio, int meio, int fim){
+    int tamanho, p1, p2;
+    char **temp;
+    bool fim1=false, fim2=false;
+
+    tamanho=fim-inicio+1;
+    p1=inicio;
+    p2=meio+1;
+
+    temp=(char**)malloc(sizeof(char*)*tamanho);
+
+    if(temp!=NULL){
+        for(int i=0; i<tamanho; i++){
+            if(!fim1 && !fim2){
+                if(strlen(vet[p1])<strlen(vet[p2])){
+                    temp[i]=vet[p1++];
+                }else
+                    temp[i]=vet[p2++];
+                
+                if(p1>meio){
+                    fim1=true;
+                }
+                if(p2>fim){
+                    fim2=true;
+                }
+            }else
+            if(!fim1){
+                temp[i]=vet[p1++];
+            }else
+                temp[i]=vet[p2++];
+        }
+        for(int j=0, k=inicio; j<tamanho; j++, k++){
+            vet[k]=temp[j];
+        }
+    }
+    free(temp);
+}
+
+void Merge_Sort(char **vet, int inicio, int fim){
+    if(inicio<fim){
+        int meio=(inicio+fim)/2;
+
+        Merge_Sort(vet, inicio, meio);
+        Merge_Sort(vet, meio+1, fim);
+
+        merge(vet, inicio, meio, fim);
+    }
+}
 
 bool verifica(char letra, char *palavra, char *letras){
     if(strchr(palavra, letra)==NULL){
@@ -52,8 +100,8 @@ bool carregar_palavras(Jogo *jogo){
         return false;
     }
 
-    jogo->palavras=(char**)malloc(sizeof(char*)*300);
-    jogo->discovers=(bool*)calloc(300, sizeof(bool));
+    jogo->palavras=(char**)malloc(sizeof(char*)*2000);
+    jogo->discovers=(bool*)calloc(2000, sizeof(bool));
     jogo->tam=(int*)calloc(19, sizeof(int));
     jogo->quant=(int*)calloc(19, sizeof(int));
 
@@ -130,17 +178,23 @@ void validador(Jogo *jogo, char* answer){
 }
 
 void solucao(Jogo *jogo) {
+    int acumulador=0;
     if (jogo != NULL) {
+        Merge_Sort(jogo->palavras, 0, jogo->total-1);
         printf("para encerrar o jogo, estavam faltando as palavras:\n");
 
         for (int i=4; i<=jogo->l_word_max; i++) {
             if (jogo->tam[i - 4] > 0) {
                 printf("(%d letras) ", i);
-                
-                for (int j=0; j<jogo->total; j++) {
-                    
-                    if (strlen(jogo->palavras[j])==i && jogo->discovers[j]==false) {
-                        printf("%s ", jogo->palavras[j]);
+                acumulador+=jogo->tam[i-4];
+                int aux=acumulador;
+                while(jogo->tam[i-4]>0){
+                    printf("%s", jogo->palavras[aux-1]);
+                    jogo->tam[i-4]--;
+                    aux--;
+
+                    if(jogo->tam[i-4]>0){
+                        printf(", ");
                     }
                 }
                 printf("\n");
