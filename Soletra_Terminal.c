@@ -7,6 +7,8 @@
 #define MIN 4
 #define ERRO -32000
 
+/*Estrutura de dados utilizada para organizar as informações do jogo. A estrutura utilizada foi uma lista
+sequencial com um vetor auxiliar para dizer quais palavras da lista foram descobertas.*/
 typedef struct{
     char **palavras;
     bool *discovers;
@@ -19,6 +21,9 @@ typedef struct{
     int l_word_max;
 } Jogo;
 
+/*Cabeçalho das funções criadas para o projeto.*/
+void merge(char **vet, int inicio, int meio, int fim);
+void Merge_Sort(char **vet, int inicio, int fim);
 bool verifica(char letra, char *palavra, char *letras);
 int busca_binaria(Jogo *jogo, char* answer, int total);
 bool carregar_palavras(Jogo *jogo);
@@ -27,6 +32,7 @@ void progresso(Jogo *jogo);
 void solucao(Jogo *jogo);
 void apagar_tudo(Jogo *jogo);
 
+/*Função auxiliar que divide junta dois subvetores que foram passados pela função Merge_Sort ordenadamente.*/
 void merge(char **vet, int inicio, int meio, int fim){
     int tamanho, p1, p2;
     char **temp;
@@ -65,6 +71,9 @@ void merge(char **vet, int inicio, int meio, int fim){
     free(temp);
 }
 
+/*Função recursiva que divide o vetor de palavras em subvetores de 1 palavra e depois os vai juntando 
+ordenamente em relação ao tamanho da palavra. Esta sendo utilizado para diminuir a complexidade na hora da
+impressão da solução.*/
 void Merge_Sort(char **vet, int inicio, int fim){
     if(inicio<fim){
         int meio=(inicio+fim)/2;
@@ -76,6 +85,9 @@ void Merge_Sort(char **vet, int inicio, int fim){
     }
 }
 
+/*Função auxiliar que é utilizada na função carregar_palavras. Ela serve para verificar se a palavra passada pelo seus 
+parâmetros é valida checando se ela tem a letra obrigatória e olhando se ela também é uma composição das outras letras 
+passadas ao jogo ser iniciado.*/
 bool verifica(char letra, char *palavra, char *letras){
     if(strchr(palavra, letra)==NULL){
         return false;
@@ -90,6 +102,8 @@ bool verifica(char letra, char *palavra, char *letras){
 return true;
 }
 
+/*Essa função é chamada ao se utilizar o comando inicio. Seu objetivo é procurar no documento todas as palavras válidas e 
+guardar dentro da lista.*/
 bool carregar_palavras(Jogo *jogo){
     FILE *fp=fopen("valid_words.txt", "r");
     char buffer[100];
@@ -105,8 +119,8 @@ bool carregar_palavras(Jogo *jogo){
     jogo->tam=(int*)calloc(19, sizeof(int));
     jogo->quant=(int*)calloc(19, sizeof(int));
 
-    if(jogo->palavras==NULL || jogo->discovers==NULL){
-        printf("Erro na alocação de memória");
+    if(jogo->palavras==NULL || jogo->discovers==NULL || jogo->tam==NULL || jogo->quant==NULL){
+        printf("Erro na alocação de memória\n");
         fclose(fp);
         return false;
     }
@@ -132,6 +146,8 @@ bool carregar_palavras(Jogo *jogo){
 return true;
 }
 
+/*A busca binária é utilizada pela função verifica para ver se a palavra tentada pelo jogador está na lista
+de palavras válidas.*/
 int busca_binaria(Jogo *jogo, char* answer, int total){
     if(jogo!=NULL){
         int inf=0;
@@ -156,6 +172,8 @@ int busca_binaria(Jogo *jogo, char* answer, int total){
 return ERRO;
 }
 
+/* Função que verica se a resposta que o jogador deu é válida. Ela verifica com ajuda da busca binária se a resposta
+do jogador é correta. Caso seja é impresso "sucesso +1", se não é impresso "palavra invalida".*/
 void validador(Jogo *jogo, char* answer){
     if(strchr(answer, jogo->obrigada)==NULL){
         printf("palavra invalida\n");
@@ -177,11 +195,14 @@ void validador(Jogo *jogo, char* answer){
     }
 }
 
+/* Essa função quando é chamada imprime todos as palavras válidas guardadas na lista em relação ao tamanho das palavras e depois encerra o programa.
+ Ele imprime indo das menores (que são as de 4 letras) até as de maior tamanho. Essa função faz a chamada do Merge_Sort para deixar o vetor ordenado
+em relação ao tamanho, fazendo com que ao invés da complexidade ser O(n²), caso não estivesse ordenado, ela seja O(n).*/
 void solucao(Jogo *jogo) {
     int acumulador=0;
     if (jogo != NULL) {
         Merge_Sort(jogo->palavras, 0, jogo->total-1);
-        printf("para encerrar o jogo, estavam faltando as palavras:\n");
+        printf("para encerrar o jogo estavam faltando as palavras:\n");
 
         for (int i=4; i<=jogo->l_word_max; i++) {
             if (jogo->tam[i - 4] > 0) {
@@ -204,6 +225,7 @@ void solucao(Jogo *jogo) {
     }
 }
 
+/* Função que tem o intuito de imprimir em relação ao número de letras quantas palavras palavras o jogador acertou e quantas faltam. */
 void progresso(Jogo *jogo){
     if(jogo!=NULL){
         printf("progresso atual:\n");
@@ -217,6 +239,7 @@ void progresso(Jogo *jogo){
     }
 }
 
+/*Função que da free em todas as alocações que são feitas na heap ao o programa ser encerrado.*/
 void apagar_tudo(Jogo *jogo){
     if(jogo!=NULL){
         for(int i=0; i<jogo->total; i++){
@@ -237,6 +260,8 @@ void apagar_tudo(Jogo *jogo){
     }
 }
 
+/*Função principal onde se é feito lido os comandos, as letras, as respostas e se é também onde se faz o controle das chamadas das funções
+principais através dos comandos que são lidos.*/
 int main(void){
     char comando[10];
     Jogo jogo;
