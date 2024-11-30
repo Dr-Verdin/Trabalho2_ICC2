@@ -146,7 +146,7 @@ bool carregar_palavras(Jogo *jogo){
 return true;
 }
 
-/*A busca binária é utilizada pela função verifica para ver se a palavra tentada pelo jogador está na lista
+/*A busca binária é utilizada pela função validador para ver se a palavra tentada pelo jogador está na lista
 de palavras válidas.*/
 int busca_binaria(Jogo *jogo, char* answer, int total){
     if(jogo!=NULL){
